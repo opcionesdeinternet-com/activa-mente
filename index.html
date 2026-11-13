@@ -13,16 +13,21 @@
     <!-- Precarga de la Imagen Principal del Hero (Optimiza LCP) -->
     <link rel="preload" as="image" href="Mockup-ebook.webp" type="image/webp">
 
-    <!-- Preconexión de Fuentes para Reducir TBT -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <!-- Fuente Inter alojada localmente (archivo inter-latin.woff2 en la misma carpeta que este index.html) -->
+    <link rel="preload" as="font" type="font/woff2" href="inter-latin.woff2" crossorigin>
 
     <!-- Tailwind CDN (Para Producción se recomienda compilar a un archivo CSS estático) -->
     <script src="https://cdn.tailwindcss.com"></script>
 
     <style>
-        body { font-family: 'Inter', sans-serif; }
+        @font-face {
+            font-family: 'Inter';
+            font-style: normal;
+            font-weight: 400 800;
+            font-display: swap;
+            src: url('inter-latin.woff2') format('woff2');
+        }
+        body { font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif; }
         html { scroll-behavior: smooth; }
         details > summary { list-style: none; cursor: pointer; }
         details > summary::-webkit-details-marker { display: none; }
