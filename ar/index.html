@@ -45,7 +45,16 @@
 		function gtag(){dataLayer.push(arguments);}
 		gtag('js', new Date());
 
-		gtag('consent', 'default', {analytics_storage:'denied', ad_storage:'denied', ad_user_data:'denied', ad_personalization:'denied'});
+		// Medición de visitas; se respeta una decisión de rechazo guardada.
+        var amAnalyticsAllowed = true;
+        try {
+            var amAnalyticsChoice = localStorage.getItem('am_analytics_consent');
+            amAnalyticsAllowed = amAnalyticsChoice ? amAnalyticsChoice === 'granted' : localStorage.getItem('am_cookie_consent') !== 'denied';
+        } catch (e) {}
+        gtag('consent', 'default', {
+            analytics_storage: amAnalyticsAllowed ? 'granted' : 'denied',
+            ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied'
+        });
 		gtag('config', 'G-S32SNEXW5R');
 		</script>
 
@@ -391,12 +400,18 @@
                 </div>
             </details>
 
+<details class="bg-slate-800/40 border border-slate-700/60 rounded-xl p-4">
+<summary class="font-semibold text-slate-300">Preferencias de medición de visitas</summary>
+<p class="mt-3 text-slate-400">Usamos Google Analytics para medir las visitas y el uso de esta página. Podés permitir o desactivar sus cookies de medición.</p>
+<div class="flex flex-wrap gap-3 mt-3"><button type="button" id="am-ga-allow" class="border border-slate-500 rounded-lg px-3 py-2">Permitir medición</button><button type="button" id="am-ga-deny" class="border border-slate-500 rounded-lg px-3 py-2">Desactivar medición</button></div>
+<p id="am-ga-status" role="status" class="mt-3 text-slate-400"></p>
+</details>
             <details id="privacidad" class="bg-slate-800/40 border border-slate-700/60 rounded-xl p-4">
                 <summary class="font-semibold text-slate-300">Política de privacidad y cookies</summary>
                 <div class="mt-3 space-y-2 text-slate-400 leading-relaxed">
-                    <p><strong class="text-slate-300">1. Datos que recopilamos.</strong> Al comprar, el procesador de pagos (Impultienda) recopila los datos necesarios para la transacción: nombre, correo electrónico y teléfono, entre otros. En esta página, si aceptas las cookies, recopilamos además datos de navegación: páginas vistas, clics en los botones de compra, tipo de dispositivo y navegador, y ubicación aproximada.</p>
+                    <p><strong class="text-slate-300">1. Datos que recopilamos.</strong> Al comprar, el procesador de pagos (Impultienda) recopila los datos necesarios para la transacción: nombre, correo electrónico y teléfono, entre otros. En esta página usamos Google Analytics para medir datos de navegación, salvo que desactives la medición: páginas vistas, clics en los botones de compra, tipo de dispositivo y navegador, y ubicación aproximada.</p>
                     <p><strong class="text-slate-300">2. Uso de los datos.</strong> Usamos los datos para procesar la compra, entregarte el producto, brindarte soporte, entender cómo se usa esta página y medir y mejorar el rendimiento de nuestra publicidad.</p>
-                    <p><strong class="text-slate-300">3. Cookies, Google Analytics y Meta Pixel.</strong> Esta página utiliza Google Analytics (Google LLC) para conocer cómo se usa el sitio, y el Meta Pixel (Meta Platforms, Inc.) para medir los resultados de nuestros anuncios en Facebook e Instagram y mostrarte anuncios más relevantes. Estas herramientas instalan cookies y envían información sobre tu visita y tus interacciones con la página (por ejemplo, que viste el producto o hiciste clic en comprar). Solo se activan si aceptas las cookies; si las rechazas, no se instalan cookies de medición ni de publicidad en tu dispositivo. El aviso de cookies no se muestra en esta versión de la página. También puedes gestionar tus preferencias de anuncios desde tu cuenta de Google, Facebook o Instagram.</p>
+                    <p><strong class="text-slate-300">3. Cookies, Google Analytics y Meta Pixel.</strong> Esta página utiliza Google Analytics (Google LLC) para conocer cómo se usa el sitio, y el Meta Pixel (Meta Platforms, Inc.) para medir los resultados de nuestros anuncios en Facebook e Instagram y mostrarte anuncios más relevantes. Estas herramientas instalan cookies y envían información sobre tu visita y tus interacciones con la página (por ejemplo, que viste el producto o hiciste clic en comprar). La medición de visitas de Google Analytics está habilitada por defecto, salvo que exista un rechazo guardado. Podés desactivar sus cookies desde “Preferencias de medición de visitas”. Google mantiene denegado el almacenamiento publicitario y la personalización de anuncios. Meta Pixel conserva su configuración de consentimiento independiente. También puedes gestionar tus preferencias de anuncios desde tu cuenta de Google, Facebook o Instagram.</p>
                     <p><strong class="text-slate-300">4. Terceros.</strong> No vendemos tus datos. Los compartimos solo con los proveedores necesarios para operar: Impultienda (pago y entrega) y, si aceptaste las cookies, Google (análisis) y Meta (medición publicitaria). Estos servicios tienen sus propias políticas de privacidad.</p>
                     <p><strong class="text-slate-300">5. Seguridad.</strong> Los pagos se procesan en plataformas seguras. No almacenamos los datos de tu tarjeta.</p>
                     <p><strong class="text-slate-300">6. Tus derechos.</strong> Puedes solicitar el acceso, la corrección o la eliminación de tus datos escribiéndonos por los canales de contacto.</p>
@@ -414,6 +429,19 @@
 
 
     <script>
+        (function () {
+            var status = document.getElementById('am-ga-status');
+            function render() { status.textContent = 'Medición de visitas: ' + (amAnalyticsAllowed ? 'permitida.' : 'desactivada.'); }
+            function choose(allowed) {
+                amAnalyticsAllowed = allowed;
+                try { localStorage.setItem('am_analytics_consent', allowed ? 'granted' : 'denied'); } catch (e) {}
+                gtag('consent', 'update', { analytics_storage: allowed ? 'granted' : 'denied' });
+                render();
+            }
+            document.getElementById('am-ga-allow').addEventListener('click', function () { choose(true); });
+            document.getElementById('am-ga-deny').addEventListener('click', function () { choose(false); });
+            render();
+        })();
         // Evento InitiateCheckout en todos los botones de compra
         document.querySelectorAll('a[href="https://activa-tu-mente.impultienda.ar/checkout"]').forEach(function (a) {
             a.addEventListener('click', function () {
@@ -427,4 +455,5 @@
     </script>
 </body>
 </html>
+
 
